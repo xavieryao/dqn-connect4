@@ -83,7 +83,8 @@ class Connect(object):
 			'playing': 0,
 			'tie': 0,
 			'machine win': 1,
-			'user win': -1
+			'user win': -1,
+			'illegal step': -1
 		}
 		return score_map[self.gs]
 
@@ -152,7 +153,7 @@ class Connect(object):
 		return self.get_state()
 
 	def draw(self):
-		return self.get_state()
+		return np.array(self.get_state())
 
 	def get_possible_actions(self):
 		return range(self.nb_actions)

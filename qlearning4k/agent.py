@@ -41,7 +41,11 @@ class Agent:
 			for i in range(len(self.model.input_shape)):
 				if self.model.input_shape[i] and game_output_shape[i] and self.model.input_shape[i] != game_output_shape[i]:
 					raise Exception('Dimension mismatch. Input shape of the model should be compatible with the game.')
+
+
 		if len(self.model.output_shape) != 2 or self.model.output_shape[1] != game.nb_actions:
+			print('output shape:')
+			print(self.model.output_shape)
 			raise Exception('Output shape of model should be (nb_samples, nb_actions).')
 
 	def get_game_data(self, game):
@@ -105,13 +109,13 @@ class Agent:
 		self.check_game_compatibility(game)
 		model = self.model
 		win_count = 0
-		frames = []
+		vis_frames = []
 		for epoch in range(nb_epoch):
 			game.reset()
 			self.clear_frames()
 			S = self.get_game_data(game)
 			if visualize:
-				frames.append(game.draw())
+				vis_frames.append(game.draw())
 			game_over = False
 			while not game_over:
 				if np.random.rand() < epsilon:
@@ -125,7 +129,7 @@ class Agent:
 				game.play(action)
 				S = self.get_game_data(game)
 				if visualize:
-					frames.append(game.draw())
+					vis_frames.append(game.draw())
 				game_over = game.is_over()
 			if game.is_won():
 				win_count += 1
@@ -133,7 +137,6 @@ class Agent:
 		if visualize:
 			if 'images' not in os.listdir('.'):
 				os.mkdir('images')
-			for i in range(len(frames)):
-				plt.imshow(frames[i], interpolation='none')
+			for i in range(len(vis_frames)):
+				plt.imshow(vis_frames[i], interpolation='none')
 				plt.savefig("images/" + game.name + str(i) + ".png")
- 
