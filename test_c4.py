@@ -6,9 +6,9 @@ from qlearning4k import Agent
 from keras.models import load_model
 from keras.models import model_from_json
 
-m = 7
-n = 8
-hidden_size = 100
+m = 10
+n = 10
+hidden_size = 500
 nb_frames = 1
 
 model = Sequential()
@@ -25,20 +25,27 @@ with open('model.json', 'w') as json_file:
 model.load_weights('c4.hdf5')
 
 agent = Agent(model=model)
-'''
-for i in range(10):
+
+for i in range(20):
+    print("random play round {}".format(i))
+    c4 = Connect(m, n)#, opposite=opposite)
+    agent.train(c4, batch_size=10, nb_epoch=5000, epsilon=.1)
+    print('saving')
+    model.save_weights('c4.hdf5')
+
+for i in range(50):
     print("self play round {}".format(i))
     with open('model.json', 'r') as json_file:
         stable_model = model_from_json(json_file.read())
     stable_model.load_weights('c4.hdf5')
-    #stable_agent = Agent(model=stable_model)
-    #def opposite():
-    #    return stable_agent.predict(c4)
+    stable_agent = Agent(model=stable_model)
+    def opposite():
+       return stable_agent.predict(c4)
 
-    c4 = Connect(m, n)#, opposite=opposite)
-    agent.train(c4, batch_size=10, nb_epoch=1000, epsilon=.1, checkpoint=1000)
+    c4 = Connect(m, n, opposite=opposite)
+    agent.train(c4, batch_size=10, nb_epoch=5000, epsilon=.1)
     print('saving')
     model.save_weights('c4.hdf5')
-'''
+
 c4 = Connect(m, n)
 agent.play(c4, visualize=True)
