@@ -19,16 +19,18 @@ model.compile(sgd(lr=.2), "mse")
 
 
 model = load_model('c4.hdf5')
-
 agent = Agent(model=model)
 
-def opposite():
-    return agent.predict(c4)
+for i in range(20):
+    print("self play round {}".format(i))
 
-c4 = Connect(m, n, opposite=opposite)
+    stable_agent = Agent(model=load_model('c4.hdf5'))
+    def opposite():
+        return stable_agent.predict(c4)
 
-agent.train(c4, batch_size=10, nb_epoch=50000, epsilon=.1, checkpoint=1000)
-print('saving')
-model.save('c4_selfplay.hdf5')
+    c4 = Connect(m, n, opposite=opposite)
+    agent.train(c4, batch_size=10, nb_epoch=1000, epsilon=.1, checkpoint=1000)
+    print('saving')
+    model.save('c4.hdf5')
 
 agent.play(c4, visualize=True)
