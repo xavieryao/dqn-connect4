@@ -1,16 +1,16 @@
 class Game(object):
-	
+
 	def __init__(self):
 		self.reset()
 
 	@property
 	def name(self):
 		return "Game"
-	
+
 	@property
 	def nb_actions(self):
 		return 0
-	
+
 	def reset(self):
 		pass
 
