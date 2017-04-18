@@ -19,9 +19,11 @@ model.add(Dense(8))
 model.compile(sgd(lr=.2), "mse")
 
 
-model.load_weights('c4.hdf5')
 with open('model.json', 'w') as json_file:
     json_file.write(model.to_json())
+
+model.load_weights('c4.hdf5')
+
 agent = Agent(model=model)
 '''
 for i in range(10):
