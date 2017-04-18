@@ -1,5 +1,7 @@
 from .memory import ExperienceReplay
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.image as img
 import os
@@ -148,7 +150,8 @@ class Agent:
 			if 'images' not in os.listdir('.'):
 				os.mkdir('images')
 			for i in range(len(vis_frames)):
-				#plt.imshow(vis_frames[i], interpolation='none')
-                                fig = plt.figure()
+				plt.imshow(vis_frames[i], interpolation='none')
+				# fig = plt.figure()
+				# plt.plot(vis_frames[i], interpolation='none')
 				plt.savefig("images/" + game.name + str(i) + ".png")
-                                plt.close(fig)
+				# plt.close(fig)
