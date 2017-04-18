@@ -17,11 +17,18 @@ model.add(Dense(hidden_size, activation='relu'))
 model.add(Dense(8))
 model.compile(sgd(lr=.2), "mse")
 
-c4 = Connect(m, n)
-agent = Agent(model=model)
-# agent.train(c4, batch_size=10, nb_epoch=1000, epsilon=.1)
-# print('training')
-# model.save('c4.hdf5')
 
 model = load_model('c4.hdf5')
-agent.play(c4)
+
+agent = Agent(model=model)
+
+def opposite():
+    return agent.predict(c4)
+
+c4 = Connect(m, n, opposite=opposite)
+
+agent.train(c4, batch_size=10, nb_epoch=50000, epsilon=.1, checkpoint=1000)
+print('saving')
+model.save('c4_selfplay.hdf5')
+
+agent.play(c4, visualize=True)

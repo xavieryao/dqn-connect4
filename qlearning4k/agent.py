@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as img
 import os
+from tqdm import *
 
 class Agent:
 
@@ -71,7 +72,7 @@ class Agent:
 		model = self.model
 		nb_actions = model.output_shape[-1]
 		win_count = 0
-		for epoch in range(nb_epoch):
+		for epoch in tqdm(range(nb_epoch)):
 			loss = 0.
 			game.reset()
 			self.clear_frames()
@@ -98,12 +99,21 @@ class Agent:
 						inputs, targets = batch
 						loss += float(model.train_on_batch(inputs, targets))
 				if checkpoint and ((epoch + 1 - observe) % checkpoint == 0 or epoch + 1 == nb_epoch):
-					model.save_weights('weights.dat')
+					model.save_weights('weights.hdf5')
 			if game.is_won():
 				win_count += 1
 			if epsilon > final_epsilon and epoch >= observe:
 				epsilon -= delta
-			print("Epoch {:03d}/{:03d} | Loss {:.4f} | Epsilon {:.2f} | Win count {}".format(epoch + 1, nb_epoch, loss, epsilon, win_count))
+			# print("Epoch {:03d}/{:03d} | Loss {:.4f} | Epsilon {:.2f} | Win count {}".format(epoch + 1, nb_epoch, loss, epsilon, win_count))
+
+	def predict(self, game):
+		model = self.model
+		S = self.get_game_data(game)
+		q = model.predict(S)[0]
+		possible_actions = game.get_possible_actions()
+		q = [q[i] for i in possible_actions]
+		action = possible_actions[np.argmax(q)]
+		return action
 
 	def play(self, game, nb_epoch=10, epsilon=0., visualize=True):
 		self.check_game_compatibility(game)

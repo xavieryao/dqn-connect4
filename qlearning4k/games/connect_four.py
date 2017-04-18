@@ -5,9 +5,10 @@ import random
 
 class Connect(object):
 
-	def __init__(self, m, n):
+	def __init__(self, m, n, opposite = None):
 		self.m = m
 		self.n = n
+		self.opposite = opposite
 		self.reset()
 
 	@property
@@ -54,8 +55,11 @@ class Connect(object):
 		if len(available_actions) == 0:
 			self.gs = 'tie'
 			return
-		# random play
-		y = random.choice(available_actions)
+
+		if not self.opposite:
+			y = self.random_play(available_actions)
+		else:
+			y = self.opposite()
 		x = self.top[y]
 		self.board[x][y] = 1
 
@@ -156,4 +160,11 @@ class Connect(object):
 		return np.array(self.get_state())
 
 	def get_possible_actions(self):
-		return range(self.nb_actions)
+		available_actions = []
+		for idx, c in enumerate(self.top):
+			if c >= 0:
+				available_actions.append(idx)
+		return available_actions
+
+	def random_play(self, available_actions):
+		return random.choice(available_actions)
