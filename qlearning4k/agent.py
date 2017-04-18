@@ -148,5 +148,5 @@ class Agent:
 			if 'images' not in os.listdir('.'):
 				os.mkdir('images')
 			for i in range(len(vis_frames)):
-				plt.imshow(vis_frames[i], interpolation='none')
+				#plt.imshow(vis_frames[i], interpolation='none')
 				plt.savefig("images/" + game.name + str(i) + ".png")

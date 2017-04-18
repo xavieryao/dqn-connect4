@@ -20,8 +20,8 @@ model.compile(sgd(lr=.2), "mse")
 
 model = load_model('c4.hdf5')
 agent = Agent(model=model)
-
-for i in range(20):
+'''
+for i in range(100):
     print("self play round {}".format(i))
 
     stable_agent = Agent(model=load_model('c4.hdf5'))
@@ -32,5 +32,6 @@ for i in range(20):
     agent.train(c4, batch_size=10, nb_epoch=1000, epsilon=.1, checkpoint=1000)
     print('saving')
     model.save('c4.hdf5')
-
+'''
+c4 = Connect(m, n)
 agent.play(c4, visualize=True)
