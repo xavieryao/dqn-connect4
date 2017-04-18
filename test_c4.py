@@ -26,7 +26,6 @@ for i in range(20):
 
     stable_agent = Agent(model=load_model('c4.hdf5'))
     def opposite():
-        print(c4.board)
         return stable_agent.predict(c4)
 
     c4 = Connect(m, n, opposite=opposite)
