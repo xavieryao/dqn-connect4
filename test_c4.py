@@ -16,7 +16,7 @@ model.add(Flatten(input_shape=(nb_frames, m, n)))
 model.add(Dense(hidden_size, activation='relu'))
 model.add(Dense(hidden_size, activation='relu'))
 model.add(Dense(n))
-model.compile(sgd(lr=.2), "mse")
+model.compile(RMSprop(), "mse")
 
 
 with open('model.json', 'w') as json_file:
