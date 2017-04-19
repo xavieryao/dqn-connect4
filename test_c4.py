@@ -41,8 +41,16 @@ def self_play(_round=50):
             stable_model = model_from_json(json_file.read())
         stable_model.load_weights('c4.hdf5')
         stable_agent = Agent(model=stable_model)
+        mirror_game = Connect(m, n)
         def opposite():
-           return stable_agent.predict(c4)
+            mirror_game.board = np.array(c4.get_state())
+            for i in range(m):
+                for j in range(n):
+                    if mirror_game.board[m][n] == 1:
+                        mirror_game.board[m][n] = 2
+                    elif mirror_game.board[m][n] == 2:
+                        mirror_game.board[m][n] = 1
+            return stable_agent.predict(mirror_game)
 
         c4 = Connect(m, n, opposite=opposite)
         agent.train(c4, batch_size=10, nb_epoch=5000, epsilon=.1)
@@ -54,7 +62,8 @@ def evaluate():
     agent.play(c4, visualize=True)
 
 if __name__ == '__main__':
-    for _ in range(30):
+    for i in range(30):
+        print("loop {}".format(i))
         random_play()
         self_play()
         evaluate()
