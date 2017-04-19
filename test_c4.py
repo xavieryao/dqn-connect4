@@ -8,21 +8,21 @@ from keras.models import model_from_json
 
 m = 10
 n = 10
-hidden_size = 500
+hidden_size = 200
 nb_frames = 1
 
 model = Sequential()
 model.add(Flatten(input_shape=(nb_frames, m, n)))
 model.add(Dense(hidden_size, activation='relu'))
 model.add(Dense(hidden_size, activation='relu'))
-model.add(Dense(8))
+model.add(Dense(n))
 model.compile(sgd(lr=.2), "mse")
 
 
 with open('model.json', 'w') as json_file:
     json_file.write(model.to_json())
 
-model.load_weights('c4.hdf5')
+#model.load_weights('c4.hdf5')
 
 agent = Agent(model=model)
 
