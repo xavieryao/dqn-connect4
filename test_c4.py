@@ -24,7 +24,6 @@ with open('model.json', 'w') as json_file:
     json_file.write(model.to_json())
 
 model.load_weights('c4.hdf5')
-global opposite
 
 agent = Agent(model=model)
 
@@ -44,7 +43,6 @@ def self_play(_round=50):
         stable_model.load_weights('c4.hdf5')
         stable_agent = Agent(model=stable_model)
         mirror_game = Connect(m, n)
-	global opposite
         def opposite():
             mirror_game.board = np.array(c4.get_state())
             for i in range(m):
@@ -60,8 +58,31 @@ def self_play(_round=50):
         print('saving')
         model.save_weights('c4.hdf5')
 
+def play_with_ai(c4):
+    def func():
+        import strategy
+        UCT = strategy.UCTStrategy
+        uct = UCT(m, n, c4.noX, c4.noY)
+        uct.timeout = 50
+        board = strategy.intArray(m*n)
+        for i in range(m):
+            for j in range(n):
+                if c4.board[i][j] == 1:
+                    board[i*n+j] = 2
+                elif c4.board[i][j] == 2:
+                    board[i*n+j] = 1
+                else:
+                    board[i*n+j] = 0
+        top = strategy.intArray(n)
+        for i in range(n):
+            top[i] = int(c4.top[i])
+        point = uct.getPointFor1DBoard(board=board,lastX=int(c4.last[0]),lastY=int(c4.last[1]),noX=c4.noX,noY=c4.noY,top=top,M=m,N=n)
+        return point.y
+    return func
+
 def evaluate():
-    c4 = Connect(m, n, opposite=opposite)
+    c4 = Connect(m, n)
+    c4.opposite = play_with_ai(c4)
     agent.play(c4, visualize=True)
 
 if __name__ == '__main__':

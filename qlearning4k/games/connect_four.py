@@ -26,6 +26,7 @@ class Connect(object):
 		self.board = np.zeros((self.m, self.n))
 		self.top = np.full((self.n), self.m-1)
 		self.board[self.noX][self.noY] = 3
+		self.last = (-1, -1)
 		if self.noX == self.m-1:
 			self.top[self.noY] -= 1
 
@@ -36,6 +37,7 @@ class Connect(object):
 
 		x = self.top[action]
 		y = action
+		self.last = (x, y)
 		self.board[x][y] = 2
 
 		if self.has_one_side_win(2, x, y):
