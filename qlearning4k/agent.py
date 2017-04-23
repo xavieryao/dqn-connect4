@@ -153,5 +153,4 @@ class Agent:
 				plt.imshow(vis_frames[i], interpolation='none')
 				# fig = plt.figure()
 				# plt.plot(vis_frames[i], interpolation='none')
-				plt.savefig("images/" + game.name + str(i) + ".png")
-				# plt.close(fig)
+				plt.savefig("images/{}{:04d}.png".format(game.name,i))

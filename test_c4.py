@@ -5,6 +5,7 @@ from keras.optimizers import *
 from qlearning4k import Agent
 from keras.models import load_model
 from keras.models import model_from_json
+import numpy as np
 
 m = 10
 n = 10
@@ -23,6 +24,7 @@ with open('model.json', 'w') as json_file:
     json_file.write(model.to_json())
 
 model.load_weights('c4.hdf5')
+global opposite
 
 agent = Agent(model=model)
 
@@ -42,14 +44,15 @@ def self_play(_round=50):
         stable_model.load_weights('c4.hdf5')
         stable_agent = Agent(model=stable_model)
         mirror_game = Connect(m, n)
+	global opposite
         def opposite():
             mirror_game.board = np.array(c4.get_state())
             for i in range(m):
                 for j in range(n):
-                    if mirror_game.board[m][n] == 1:
-                        mirror_game.board[m][n] = 2
-                    elif mirror_game.board[m][n] == 2:
-                        mirror_game.board[m][n] = 1
+                    if mirror_game.board[i][j] == 1:
+                        mirror_game.board[i][j] = 2
+                    elif mirror_game.board[i][j] == 2:
+                        mirror_game.board[i][j] = 1
             return stable_agent.predict(mirror_game)
 
         c4 = Connect(m, n, opposite=opposite)
@@ -58,12 +61,12 @@ def self_play(_round=50):
         model.save_weights('c4.hdf5')
 
 def evaluate():
-    c4 = Connect(m, n)
+    c4 = Connect(m, n, opposite=opposite)
     agent.play(c4, visualize=True)
 
 if __name__ == '__main__':
-    for i in range(30):
+    for i in range(1):
         print("loop {}".format(i))
-        random_play()
-        self_play()
+        #random_play(1)
+        #self_play(3)
         evaluate()
