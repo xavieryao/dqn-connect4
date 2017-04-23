@@ -24,7 +24,6 @@ with open('model.json', 'w') as json_file:
     json_file.write(model.to_json())
 
 model.load_weights('c4.hdf5')
-global opposite
 
 agent = Agent(model=model)
 
@@ -44,7 +43,6 @@ def self_play(_round=50):
         stable_model.load_weights('c4.hdf5')
         stable_agent = Agent(model=stable_model)
         mirror_game = Connect(m, n)
-	global opposite
         def opposite():
             mirror_game.board = np.array(c4.get_state())
             for i in range(m):
@@ -61,12 +59,12 @@ def self_play(_round=50):
         model.save_weights('c4.hdf5')
 
 def evaluate():
-    c4 = Connect(m, n, opposite=opposite)
+    c4 = Connect(m, n)
     agent.play(c4, visualize=True)
 
 if __name__ == '__main__':
-    for i in range(1):
+    for i in range(30):
         print("loop {}".format(i))
-        #random_play(1)
-        #self_play(3)
+        random_play(1)
+        self_play(3)
         evaluate()
