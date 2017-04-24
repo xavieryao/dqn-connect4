@@ -101,6 +101,4 @@ if __name__ == '__main__':
     for i in range(300):
         print("loop {}".format(i))
         ai_play(2)
-        random_play(2)
-        # self_play(1)
         evaluate()
