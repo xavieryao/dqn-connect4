@@ -15,6 +15,9 @@ class Agent:
 			self.memory = memory
 		else:
 			self.memory = ExperienceReplay(memory_size)
+			self.memory_inv = ExperienceReplay(memory_size) # inverted board
+			self.memory_mirror = ExperienceReplay(memory_size) # mirror board
+			self.memory_mirror_inv = ExperienceReplay(memory_size) # mirror inv board
 		if not nb_frames and not model.input_shape[1]:
 			raise Exception("Missing argument : nb_frames not provided")
 		elif not nb_frames:
@@ -34,7 +37,7 @@ class Agent:
 		self.memory.memory_size = value
 
 	def reset_memory(self):
-		self.exp_replay.reset_memory()
+		self.memory.reset_memory()
 
 	def check_game_compatibility(self, game):
 		game_output_shape = (1, None) + game.get_frame().shape
@@ -82,6 +85,9 @@ class Agent:
 				self.reset_memory()
 			game_over = False
 			S = self.get_game_data(game)
+			S_inv = game.inv_board(S)
+			S_mirror_inv = game.mirror_board(S_inv)
+			S_mirror = game.mirror_board(S)
 			while not game_over:
 				if np.random.random() < epsilon or epoch < observe:
 					a = int(np.random.randint(game.nb_actions))
@@ -89,14 +95,45 @@ class Agent:
 					q = model.predict(S)
 					a = int(np.argmax(q[0]))
 				game.play(a)
+				oppo_action = game.oppo_action
 				r = game.get_score()
+
 				S_prime = self.get_game_data(game)
+				S_prime_inv = game.inv_board(S_prime)
+				S_prime_mirror_inv = game.mirror_board(S_prime_inv)
+				S_prime_mirror = game.mirror_board(S_prime)
+
 				game_over = game.is_over()
+
 				transition = [S, a, r, S_prime, game_over]
+				transition_inv = [S_inv, oppo_action, -r, S_prime_inv, game_over]
+				transition_mirror_inv = [S_mirror_inv, game.mirror_action(oppo_action), -r, S_prime_mirror_inv, game_over]
+				transition_mirror = [S_mirror, game.mirror_action(a), r, S_prime_mirror, game_over]
+
 				self.memory.remember(*transition)
+				self.memory_inv.remember(*transition_inv)
+				self.memory_mirror_inv.remember(*transition_mirror_inv)
+				self.memory_mirror.remember(*transition_mirror)
+
 				S = S_prime
+				S_mirror = S_prime_mirror
+				S_inv = S_prime_inv
+				S_mirror_ive = S_prime_mirror_inv
+
 				if epoch >= observe:
 					batch = self.memory.get_batch(model=model, batch_size=batch_size, gamma=gamma)
+					if batch:
+						inputs, targets = batch
+						loss += float(model.train_on_batch(inputs, targets))
+					batch = self.memory_inv.get_batch(model=model, batch_size=batch_size, gamma=gamma)
+					if batch:
+						inputs, targets = batch
+						loss += float(model.train_on_batch(inputs, targets))
+					batch = self.memory_mirror.get_batch(model=model, batch_size=batch_size, gamma=gamma)
+					if batch:
+						inputs, targets = batch
+						loss += float(model.train_on_batch(inputs, targets))
+					batch = self.memory_mirror_inv.get_batch(model=model, batch_size=batch_size, gamma=gamma)
 					if batch:
 						inputs, targets = batch
 						loss += float(model.train_on_batch(inputs, targets))

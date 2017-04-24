@@ -20,9 +20,6 @@ model.add(Dense(hidden_size, activation='relu'))
 model.add(Dense(n))
 model.compile(RMSprop(), "mse")
 
-
-
-
 agent = Agent(model=model)
 
 def random_play(_round=20):
@@ -100,5 +97,6 @@ if __name__ == '__main__':
     model.load_weights('c4.hdf5')
     for i in range(300):
         print("loop {}".format(i))
-        ai_play(2)
+        ai_play(5)
+        # random_play(1)
         evaluate()

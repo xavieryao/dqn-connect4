@@ -62,6 +62,7 @@ class Connect(object):
 			y = self.random_play(available_actions)
 		else:
 			y = self.opposite()
+		self.oppo_action = y
 		x = self.top[y]
 		self.board[x][y] = 1
 
@@ -170,3 +171,23 @@ class Connect(object):
 
 	def random_play(self, available_actions):
 		return random.choice(available_actions)
+
+	def inv_board(self, board):
+		inv = np.array(board)
+		for i in range(self.m):
+			for j in range(self.n):
+				if inv[0][0][i][j] == 1:
+					inv[0][0][i][j] = 2
+				elif inv[0][0][i][j] == 2:
+					inv[0][0][i][j] = 1
+		return inv
+
+	def mirror_board(self, board):
+		mir = np.array(board)
+		for i in range(self.m):
+			for j in range(self.n):
+				mir[0][0][i][self.n-j-1] = board[0][0][i][j]
+		return mir
+
+	def mirror_action(self, act):
+		return self.n-1-act
