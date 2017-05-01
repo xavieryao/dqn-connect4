@@ -1,5 +1,5 @@
 from keras.models import Sequential
-from keras.layers import Flatten, Dense
+from keras.layers import *
 from qlearning4k.games.connect_four import Connect
 from keras.optimizers import *
 from qlearning4k import Agent
@@ -9,14 +9,17 @@ import numpy as np
 
 m = 10
 n = 10
-hidden_size = 200
 nb_frames = 1
 nb_epoch = 1000
 
 model = Sequential()
-model.add(Flatten(input_shape=(nb_frames, m, n)))
-model.add(Dense(hidden_size, activation='relu'))
-model.add(Dense(hidden_size, activation='relu'))
+model.add(Conv2D(32, (3, 3), activation='relu', input_shape=(nb_frames, m, n), data_format="channels_first"))
+model.add(Conv2D(32, (3,3), activation="relu"))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+model.add(Flatten())
+model.add(Dense(200, activation='relu'))
+model.add(Dropout(0.5))
 model.add(Dense(n))
 model.compile(RMSprop(), "mse")
 
@@ -94,7 +97,7 @@ def evaluate():
 if __name__ == '__main__':
     with open('model.json', 'w') as json_file:
         json_file.write(model.to_json())
-    model.load_weights('c4.hdf5')
+    #model.load_weights('c4.hdf5')
     for i in range(300):
         print("loop {}".format(i))
         ai_play(5)
